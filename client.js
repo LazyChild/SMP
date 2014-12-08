@@ -9,6 +9,7 @@
 var net = require("net");
 var prompt = require("prompt");
 var SMPRequest = require("./model").SMPRequest;
+var SMPResponse = require("./model").SMPResponse;
 
 var PORT = 6969;
 
@@ -27,8 +28,15 @@ client.on("connect", function () {
 
 client.on("data", function (data) {
 
-    var statusCode = 200;
-    console.log(("FROM server: response status code: " + statusCode).magenta);
+    var response = new SMPResponse();
+    response.parse(data);
+    console.log("FROM server: response status code: ".magenta +
+        (response.statusCode + " - " + response.statusText).yellow +
+        (" @ " + response.createTime).magenta);
+
+    if (response.entity) {
+        console.log(JSON.parse(response.entity));
+    }
 });
 
 
